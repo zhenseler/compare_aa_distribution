@@ -28,6 +28,9 @@ Workflow:
 	6. Compare amino acid frequency tables between groups
 
 Outputs:
+	- A count table showing the counts of each amino acid at each position within
+		the numbered master alignment
+	- A frequency table of the count table
 	
 
 -Z
@@ -37,7 +40,6 @@ Outputs:
 # Dependencies
 
 from sys import argv
-import glob
 import subprocess
 import dit
 
@@ -167,12 +169,16 @@ for diamond_i, diamond_l in enumerate(open(diamond_results + '.sam', 'U')):
 
 
 # Scans through count_list dictionary and creates freq table
+output_firstline = '\t'.join(['#POSITION', 'WT', 'SITE_ENTROPY']) + '\t' + '\t'.join(['PI_' + x for x in aa_list]) + '\n'
 
 count_output_file = open(sample_name + '_aaCount_table.txt', 'w')
+count_output_file.write(output_firstline)
 freq_output_file = open(sample_name + '_aaFreq_table.txt', 'w')
+freq_output_file.write(output_firstline)
+
 
 for position, position_dict in enumerate(count_list):
-	out_string_prefix = str(position+1) +'\tA\t'
+	out_string_prefix = str(position + 1) +'\tA\t'
 	count_string = ''
 	for amino_acid, count in sorted(position_dict.items()):
 		count_string = count_string + str(count) + '\t'
